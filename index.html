@@ -148,30 +148,58 @@ html,body{
   to{opacity:0.8;}
 }
 
-/* MINECRAFT */
-#minecraft{
-  background:#5d8a3c;
-}
-#mc-note{
-  position:absolute;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,0.5);
-  color:white;
-  padding:10px;
-}
-</style>
-</head>
+<!-- MINECRAFT -->
+<div id="minecraft" class="scene">
+  
+  <!-- grass -->
+  <div style="
+    position:absolute;
+    bottom:40%;
+    width:100%;
+    height:10%;
+    background:#3cb043;">
+  </div>
 
-<body>
+  <!-- dirt -->
+  <div style="
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:40%;
+    background:#8b5a2b;">
+  </div>
 
-<div id="buttons">
-  <button onclick="showScene('sunset')">Sunset</button>
-  <button onclick="showScene('meadow')">Meadow</button>
-  <button onclick="showScene('rod')">Rod Laver</button>
-  <button onclick="showScene('rock')">Rock Stage</button>
-  <button onclick="showScene('minecraft')">Minecraft</button>
+  <!-- Steve -->
+  <div style="
+    position:absolute;
+    bottom:40%;
+    left:30%;
+    width:40px;
+    height:60px;
+    background:#3498db;">
+  </div>
+  <div style="
+    position:absolute;
+    bottom:40%;
+    left:30%;
+    margin-top:60px;
+    width:40px;
+    height:40px;
+    background:#8e44ad;">
+  </div>
+
+  <!-- Creeper -->
+  <div style="
+    position:absolute;
+    bottom:40%;
+    left:60%;
+    width:40px;
+    height:80px;
+    background:#2ecc71;">
+  </div>
+
+  <div class="plus" onclick="pickImage('minecraft')">+</div>
+  <img id="minecraft-img" class="center-img">
 </div>
 
 <!-- SUNSET -->
