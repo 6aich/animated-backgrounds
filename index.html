@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Animated Background Worlds</title>
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+  overflow:hidden;
+  font-family:Arial, sans-serif;
+}
+
+/* BUTTON BAR */
+#buttons{
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:100;
+}
+#buttons button{
+  margin:4px;
+  padding:10px 14px;
+  font-size:14px;
+  cursor:pointer;
+}
+
+/* SCENES */
+.scene{
+  position:absolute;
+  inset:0;
+  display:none;
+  overflow:hidden;
+}
+.scene.active{display:block;}
+
+/* PLUS + IMAGE */
+.plus{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:rgba(0,0,0,0.5);
+  color:white;
+  font-size:70px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:20;
+}
+.center-img{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  max-width:300px;
+  max-height:300px;
+  z-index:15;
+}
+
+/* SUNSET */
+#sunset{
+  background:linear-gradient(#3498db,#f39c12);
+}
+#sun{
+  position:absolute;
+  width:120px;
+  height:120px;
+  background:yellow;
+  border-radius:50%;
+  left:50%;
+  transform:translateX(-50%);
+  animation:sunDown 20s linear infinite;
+}
+@keyframes sunDown{
+  0%{top:-150px;}
+  100%{top:110%;}
+}
+
+/* MEADOW */
+#meadow{
+  background:linear-gradient(#87ceeb,#2ecc71);
+}
+.grass{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:40%;
+  background:#27ae60;
+  animation:sway 3s ease-in-out infinite alternate;
+}
+@keyframes sway{
+  from{transform:skewX(-2deg);}
+  to{transform:skewX(2deg);}
+}
+
+/* ROD LAVER */
+#rod{
+  background:#1abc9c;
+}
+.player{
+  position:absolute;
+  bottom:20%;
+  width:60px;
+  height:120px;
+  background:#2c3e50;
+}
+#p1{left:20%;}
+#p2{right:20%;}
+#ball{
+  position:absolute;
+  width:25px;
+  height:25px;
+  background:yellow;
+  border-radius:50%;
+  top:40%;
+  animation:ballMove 2s linear infinite alternate;
+}
+@keyframes ballMove{
+  from{left:25%;}
+  to{left:70%;}
+}
+
+/* ROCK STAGE */
+#rock{
+  background:#111;
+}
+.light{
+  position:absolute;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  opacity:0.3;
+  animation:blink 0.8s infinite alternate;
+}
+.l1{background:red; left:20%;}
+.l2{background:blue; left:45%; animation-delay:.3s;}
+.l3{background:purple; left:70%; animation-delay:.6s;}
+@keyframes blink{
+  from{opacity:0.2;}
+  to{opacity:0.8;}
+}
+
+/* MINECRAFT */
+#minecraft{
+  background:#5d8a3c;
+}
+#mc-note{
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.5);
+  color:white;
+  padding:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="buttons">
+  <button onclick="showScene('sunset')">Sunset</button>
+  <button onclick="showScene('meadow')">Meadow</button>
+  <button onclick="showScene('rod')">Rod Laver</button>
+  <button onclick="showScene('rock')">Rock Stage</button>
+  <button onclick="showScene('minecraft')">Minecraft</button>
+</div>
+
+<!-- SUNSET -->
+<div id="sunset" class="scene active">
+  <div id="sun"></div>
+  <div class="plus" onclick="pickImage('sunset')">+</div>
+  <img id="sunset-img" class="center-img">
+</div>
+
+<!-- MEADOW -->
+<div id="meadow" class="scene">
+  <div class="grass"></div>
+  <div class="plus" onclick="pickImage('meadow')">+</div>
+  <img id="meadow-img" class="center-img">
+</div>
+
+<!-- ROD LAVER -->
+<div id="rod" class="scene">
+  <div id="p1" class="player"></div>
+  <div id="p2" class="player"></div>
+  <div id="ball"></div>
+  <div class="plus" onclick="pickImage('rod')">+</div>
+  <img id="rod-img" class="center-img">
+</div>
+
+<!-- ROCK STAGE -->
+<div id="rock" class="scene">
+  <div class="light l1"></div>
+  <div class="light l2"></div>
+  <div class="light l3"></div>
+  <div class="plus" onclick="pickImage('rock')">+</div>
+  <img id="rock-img" class="center-img">
+</div>
+
+<!-- MINECRAFT -->
+<div id="minecraft" class="scene">
+  <div id="mc-note">Minecraft code area</div>
+  <div class="plus" onclick="pickImage('minecraft')">+</div>
+  <img id="minecraft-img" class="center-img">
+</div>
+
+<input type="file" id="file" accept="image/*" hidden>
+<audio id="rockAudio" src="9novs.mov" loop></audio>
+
+<script>
+let currentScene="";
+const audio=document.getElementById("rockAudio");
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  if(id==="rock"){
+    audio.currentTime=0;
+    audio.play().catch(()=>{});
+  } else {
+    audio.pause();
+  }
+}
+
+function pickImage(scene){
+  currentScene=scene;
+  document.getElementById("file").click();
+}
+
+document.getElementById("file").onchange=e=>{
+  if(!e.target.files[0])return;
+  document.getElementById(currentScene+"-img").src=
+    URL.createObjectURL(e.target.files[0]);
+};
+</script>
+
+</body>
+</html>
