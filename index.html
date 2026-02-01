@@ -1,275 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Animated Background Worlds</title>
+<title>Animated Worlds</title>
+</head>
 
-<style>
-html,body{
-  margin:0;
-  padding:0;
-  height:100%;
-  overflow:hidden;
-  font-family:Arial, sans-serif;
-}
+<body style="margin:0;background:black;color:white;font-family:Arial;overflow:hidden;">
 
-/* BUTTON BAR */
-#buttons{
-  position:fixed;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:100;
-}
-#buttons button{
-  margin:4px;
-  padding:10px 14px;
-  font-size:14px;
-  cursor:pointer;
-}
+<!-- AUDIO -->
+<audio id="oasis" src="oasis.mp3" loop></audio>
 
-/* SCENES */
-.scene{
-  position:absolute;
-  inset:0;
-  display:none;
-  overflow:hidden;
-}
-.scene.active{display:block;}
-
-/* PLUS + IMAGE */
-.plus{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  background:rgba(0,0,0,0.5);
-  color:white;
-  font-size:70px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  z-index:20;
-}
-.center-img{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  max-width:300px;
-  max-height:300px;
-  z-index:15;
-}
-
-/* SUNSET */
-#sunset{
-  background:linear-gradient(#3498db,#f39c12);
-}
-#sun{
-  position:absolute;
-  width:120px;
-  height:120px;
-  background:yellow;
-  border-radius:50%;
-  left:50%;
-  transform:translateX(-50%);
-  animation:sunDown 20s linear infinite;
-}
-@keyframes sunDown{
-  0%{top:-150px;}
-  100%{top:110%;}
-}
-
-/* MEADOW */
-#meadow{
-  background:linear-gradient(#87ceeb,#2ecc71);
-}
-.grass{
-  position:absolute;
-  bottom:0;
-  width:100%;
-  height:40%;
-  background:#27ae60;
-  animation:sway 3s ease-in-out infinite alternate;
-}
-@keyframes sway{
-  from{transform:skewX(-2deg);}
-  to{transform:skewX(2deg);}
-}
-
-/* ROD LAVER */
-#rod{
-  background:#1abc9c;
-}
-.player{
-  position:absolute;
-  bottom:20%;
-  width:60px;
-  height:120px;
-  background:#2c3e50;
-}
-#p1{left:20%;}
-#p2{right:20%;}
-#ball{
-  position:absolute;
-  width:25px;
-  height:25px;
-  background:yellow;
-  border-radius:50%;
-  top:40%;
-  animation:ballMove 2s linear infinite alternate;
-}
-@keyframes ballMove{
-  from{left:25%;}
-  to{left:70%;}
-}
-
-/* ROCK STAGE */
-#rock{
-  background:#111;
-}
-.light{
-  position:absolute;
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  opacity:0.3;
-  animation:blink 0.8s infinite alternate;
-}
-.l1{background:red; left:20%;}
-.l2{background:blue; left:45%; animation-delay:.3s;}
-.l3{background:purple; left:70%; animation-delay:.6s;}
-@keyframes blink{
-  from{opacity:0.2;}
-  to{opacity:0.8;}
-}
-
-<!-- MINECRAFT -->
-<div id="minecraft" class="scene">
-  
-  <!-- grass -->
-  <div style="
-    position:absolute;
-    bottom:40%;
-    width:100%;
-    height:10%;
-    background:#3cb043;">
-  </div>
-
-  <!-- dirt -->
-  <div style="
-    position:absolute;
-    bottom:0;
-    width:100%;
-    height:40%;
-    background:#8b5a2b;">
-  </div>
-
-  <!-- Steve -->
-  <div style="
-    position:absolute;
-    bottom:40%;
-    left:30%;
-    width:40px;
-    height:60px;
-    background:#3498db;">
-  </div>
-  <div style="
-    position:absolute;
-    bottom:40%;
-    left:30%;
-    margin-top:60px;
-    width:40px;
-    height:40px;
-    background:#8e44ad;">
-  </div>
-
-  <!-- Creeper -->
-  <div style="
-    position:absolute;
-    bottom:40%;
-    left:60%;
-    width:40px;
-    height:80px;
-    background:#2ecc71;">
-  </div>
-
-  <div class="plus" onclick="pickImage('minecraft')">+</div>
-  <img id="minecraft-img" class="center-img">
+<!-- BUTTONS -->
+<div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:50;display:flex;gap:10px;">
+  <button onclick="setBg('sunset')">Sunset</button>
+  <button onclick="setBg('meadow')">Meadow</button>
+  <button onclick="setBg('arena')">Rod Laver</button>
+  <button onclick="setBg('rock')">Rock Stage</button>
+  <button onclick="setBg('minecraft')">Minecraft</button>
 </div>
 
-<!-- SUNSET -->
-<div id="sunset" class="scene active">
-  <div id="sun"></div>
-  <div class="plus" onclick="pickImage('sunset')">+</div>
-  <img id="sunset-img" class="center-img">
-</div>
+<!-- BACKGROUND -->
+<div id="bg" style="position:absolute;inset:0;overflow:hidden;"></div>
 
-<!-- MEADOW -->
-<div id="meadow" class="scene">
-  <div class="grass"></div>
-  <div class="plus" onclick="pickImage('meadow')">+</div>
-  <img id="meadow-img" class="center-img">
-</div>
+<!-- CENTER IMAGE -->
+<img id="centerImg" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:40%;max-height:40%;display:none;z-index:10;">
 
-<!-- ROD LAVER -->
-<div id="rod" class="scene">
-  <div id="p1" class="player"></div>
-  <div id="p2" class="player"></div>
-  <div id="ball"></div>
-  <div class="plus" onclick="pickImage('rod')">+</div>
-  <img id="rod-img" class="center-img">
-</div>
-
-<!-- ROCK STAGE -->
-<div id="rock" class="scene">
-  <div class="light l1"></div>
-  <div class="light l2"></div>
-  <div class="light l3"></div>
-  <div class="plus" onclick="pickImage('rock')">+</div>
-  <img id="rock-img" class="center-img">
-</div>
-
-<!-- MINECRAFT -->
-<div id="minecraft" class="scene">
-  <div id="mc-note">Minecraft code area</div>
-  <div class="plus" onclick="pickImage('minecraft')">+</div>
-  <img id="minecraft-img" class="center-img">
-</div>
-
-<input type="file" id="file" accept="image/*" hidden>
-<audio id="rockAudio" src="9novs.mov" loop></audio>
+<!-- PLUS -->
+<label style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+width:80px;height:80px;border:4px solid white;border-radius:50%;
+display:flex;align-items:center;justify-content:center;font-size:50px;
+cursor:pointer;z-index:20;">+
+<input type="file" accept="image/*" hidden onchange="loadImg(this)">
+</label>
 
 <script>
-let currentScene="";
-const audio=document.getElementById("rockAudio");
+const bg = document.getElementById("bg");
+const oasis = document.getElementById("oasis");
 
-function showScene(id){
-  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+function clearBg(){
+  bg.innerHTML="";
+  oasis.pause();
+  oasis.currentTime=0;
+}
 
-  if(id==="rock"){
-    audio.currentTime=0;
-    audio.play().catch(()=>{});
-  } else {
-    audio.pause();
+function setBg(type){
+  clearBg();
+
+  if(type==="sunset"){
+    bg.style.background="linear-gradient(#ff8c00,#ff4500)";
+    const sun=document.createElement("div");
+    sun.style=`position:absolute;left:50%;top:-100px;
+    width:120px;height:120px;border-radius:50%;
+    background:yellow;transform:translateX(-50%)`;
+    bg.appendChild(sun);
+    let y=-100;
+    setInterval(()=>{ y+=0.3; sun.style.top=y+"px"; },30);
+  }
+
+  if(type==="meadow"){
+    bg.style.background="#2ecc71";
+    for(let i=0;i<20;i++){
+      const g=document.createElement("div");
+      g.style=`position:absolute;bottom:0;left:${i*5}%;
+      width:20px;height:80px;background:green;`;
+      bg.appendChild(g);
+      let d=1;
+      setInterval(()=>{ g.style.transform=`skewX(${d}deg)`; d*=-1; },800);
+    }
+  }
+
+  if(type==="arena"){
+    bg.style.background="#1e272e";
+    const ball=document.createElement("div");
+    ball.style=`position:absolute;top:50%;left:10%;
+    width:20px;height:20px;border-radius:50%;background:yellow;`;
+    bg.appendChild(ball);
+    let x=10,dir=1;
+    setInterval(()=>{
+      x+=dir*1;
+      if(x>90||x<10) dir*=-1;
+      ball.style.left=x+"%";
+    },16);
+  }
+
+  if(type==="rock"){
+    bg.style.background="black";
+    oasis.play();
+    for(let i=0;i<20;i++){
+      const l=document.createElement("div");
+      l.style=`position:absolute;top:0;left:${i*5}%;
+      width:10px;height:100%;background:red;opacity:0.2`;
+      bg.appendChild(l);
+      setInterval(()=>{ l.style.opacity=Math.random(); },300);
+    }
+  }
+
+  if(type==="minecraft"){
+    bg.style.background="#7bed9f";
+    const ground=document.createElement("div");
+    ground.style=`position:absolute;bottom:0;width:100%;height:40%;
+    background:#6ab04c`;
+    bg.appendChild(ground);
+
+    const steve=document.createElement("div");
+    steve.style=`position:absolute;bottom:40%;left:40%;
+    width:50px;height:80px;background:blue`;
+    bg.appendChild(steve);
+
+    const creeper=document.createElement("div");
+    creeper.style=`position:absolute;bottom:40%;left:55%;
+    width:50px;height:80px;background:green`;
+    bg.appendChild(creeper);
   }
 }
 
-function pickImage(scene){
-  currentScene=scene;
-  document.getElementById("file").click();
+function loadImg(input){
+  const img=document.getElementById("centerImg");
+  img.src=URL.createObjectURL(input.files[0]);
+  img.style.display="block";
 }
-
-document.getElementById("file").onchange=e=>{
-  if(!e.target.files[0])return;
-  document.getElementById(currentScene+"-img").src=
-    URL.createObjectURL(e.target.files[0]);
-};
 </script>
 
 </body>
