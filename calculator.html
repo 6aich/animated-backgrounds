@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at top, #f7f9ff 0%, #e6ecff 45%, #d5defa 100%);
+        color: #1c1e26;
+      }
+
+      .calculator {
+        width: min(360px, 90vw);
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 24px 45px rgba(28, 30, 38, 0.15);
+        padding: 24px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .display {
+        background: #f3f5ff;
+        border-radius: 18px;
+        padding: 20px;
+        text-align: right;
+        display: grid;
+        gap: 8px;
+      }
+
+      .display span {
+        font-size: 0.9rem;
+        color: #58607a;
+      }
+
+      .display output {
+        font-size: 2.2rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        overflow-wrap: anywhere;
+      }
+
+      .keys {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      button {
+        border: none;
+        border-radius: 14px;
+        padding: 16px 12px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: #eff2ff;
+        color: #1c1e26;
+        transition: transform 0.1s ease, box-shadow 0.2s ease;
+      }
+
+      button:active {
+        transform: scale(0.97);
+      }
+
+      button.operator {
+        background: #3d5af1;
+        color: #ffffff;
+      }
+
+      button.utility {
+        background: #ffd166;
+        color: #3a2f0b;
+      }
+
+      button.equal {
+        background: #06d6a0;
+        color: #043028;
+        grid-column: span 2;
+      }
+
+      button.zero {
+        grid-column: span 2;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="calculator" aria-label="Calculator">
+      <section class="display" aria-live="polite">
+        <span id="expression">Ready</span>
+        <output id="result" aria-label="Calculator display">0</output>
+      </section>
+      <section class="keys" aria-label="Calculator buttons">
+        <button class="utility" data-action="clear">AC</button>
+        <button class="utility" data-action="sign">±</button>
+        <button class="utility" data-action="percent">%</button>
+        <button class="operator" data-operator="/">÷</button>
+
+        <button data-digit="7">7</button>
+        <button data-digit="8">8</button>
+        <button data-digit="9">9</button>
+        <button class="operator" data-operator="*">×</button>
+
+        <button data-digit="4">4</button>
+        <button data-digit="5">5</button>
+        <button data-digit="6">6</button>
+        <button class="operator" data-operator="-">−</button>
+
+        <button data-digit="1">1</button>
+        <button data-digit="2">2</button>
+        <button data-digit="3">3</button>
+        <button class="operator" data-operator="+">+</button>
+
+        <button class="zero" data-digit="0">0</button>
+        <button data-action="decimal">.</button>
+        <button class="equal" data-action="equals">=</button>
+      </section>
+    </main>
+
+    <script>
+      const expressionEl = document.getElementById("expression");
+      const resultEl = document.getElementById("result");
+      const keys = document.querySelector(".keys");
+
+      let currentValue = "0";
+      let previousValue = null;
+      let pendingOperator = null;
+      let resetDisplay = false;
+
+      const updateDisplay = () => {
+        resultEl.textContent = currentValue;
+        const expression = [previousValue, pendingOperator]
+          .filter(Boolean)
+          .join(" ");
+        expressionEl.textContent = expression || "Ready";
+      };
+
+      const inputDigit = (digit) => {
+        if (resetDisplay) {
+          currentValue = digit;
+          resetDisplay = false;
+          return;
+        }
+        if (currentValue === "0") {
+          currentValue = digit;
+        } else {
+          currentValue += digit;
+        }
+      };
+
+      const inputDecimal = () => {
+        if (resetDisplay) {
+          currentValue = "0.";
+          resetDisplay = false;
+          return;
+        }
+        if (!currentValue.includes(".")) {
+          currentValue += ".";
+        }
+      };
+
+      const clearAll = () => {
+        currentValue = "0";
+        previousValue = null;
+        pendingOperator = null;
+        resetDisplay = false;
+      };
+
+      const toggleSign = () => {
+        if (currentValue === "0") {
+          return;
+        }
+        currentValue = currentValue.startsWith("-")
+          ? currentValue.slice(1)
+          : `-${currentValue}`;
+      };
+
+      const toPercentage = () => {
+        const value = parseFloat(currentValue);
+        if (Number.isNaN(value)) {
+          return;
+        }
+        currentValue = (value / 100).toString();
+      };
+
+      const compute = (first, second, operator) => {
+        const a = parseFloat(first);
+        const b = parseFloat(second);
+        if (Number.isNaN(a) || Number.isNaN(b)) {
+          return second;
+        }
+        switch (operator) {
+          case "+":
+            return (a + b).toString();
+          case "-":
+            return (a - b).toString();
+          case "*":
+            return (a * b).toString();
+          case "/":
+            return b === 0 ? "Error" : (a / b).toString();
+          default:
+            return second;
+        }
+      };
+
+      const setOperator = (operator) => {
+        if (pendingOperator && previousValue !== null && !resetDisplay) {
+          currentValue = compute(previousValue, currentValue, pendingOperator);
+        }
+        previousValue = currentValue;
+        pendingOperator = operator;
+        resetDisplay = true;
+      };
+
+      const handleEquals = () => {
+        if (!pendingOperator || previousValue === null) {
+          return;
+        }
+        currentValue = compute(previousValue, currentValue, pendingOperator);
+        previousValue = null;
+        pendingOperator = null;
+        resetDisplay = true;
+      };
+
+      keys.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLButtonElement)) {
+          return;
+        }
+
+        const { digit, operator, action } = target.dataset;
+
+        if (digit) {
+          inputDigit(digit);
+        } else if (operator) {
+          setOperator(operator);
+        } else if (action === "decimal") {
+          inputDecimal();
+        } else if (action === "clear") {
+          clearAll();
+        } else if (action === "sign") {
+          toggleSign();
+        } else if (action === "percent") {
+          toPercentage();
+        } else if (action === "equals") {
+          handleEquals();
+        }
+
+        updateDisplay();
+      });
+
+      updateDisplay();
+    </script>
+  </body>
+</html>
