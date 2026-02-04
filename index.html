@@ -5,29 +5,41 @@
 <title>Animated Worlds</title>
 </head>
 
-
-
 <body style="margin:0;background:black;color:white;font-family:Arial;overflow:hidden;">
 
-<a href="calculator.html" style="
+<!-- UI LAYER (ALWAYS ON TOP) -->
+<div id="ui" style="
   position:fixed;
   bottom:10px;
   right:10px;
-  z-index:100;
-  color:white;
-  text-decoration:none;
-  background:#222;
-  padding:10px 14px;
-  border-radius:8px;
+  z-index:9999;
 ">
-  🧮 Calculator
-</a>
+  <a href="calculator.html" style="
+    color:white;
+    text-decoration:none;
+    background:#222;
+    padding:10px 14px;
+    border-radius:8px;
+    font-weight:bold;
+    display:inline-block;
+  ">
+    🧮 Calculator
+  </a>
+</div>
 
 <!-- AUDIO -->
 <audio id="oasis" src="oasis.mp3" loop></audio>
 
 <!-- BUTTONS -->
-<div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:50;display:flex;gap:10px;">
+<div style="
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:50;
+  display:flex;
+  gap:10px;
+">
   <button onclick="setBg('sunset')">Sunset</button>
   <button onclick="setBg('meadow')">Meadow</button>
   <button onclick="setBg('arena')">Rod Laver</button>
@@ -39,14 +51,35 @@
 <div id="bg" style="position:absolute;inset:0;overflow:hidden;"></div>
 
 <!-- CENTER IMAGE -->
-<img id="centerImg" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:40%;max-height:40%;display:none;z-index:10;">
+<img id="centerImg" style="
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  max-width:40%;
+  max-height:40%;
+  display:none;
+  z-index:10;
+">
 
 <!-- PLUS -->
-<label style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-width:80px;height:80px;border:4px solid white;border-radius:50%;
-display:flex;align-items:center;justify-content:center;font-size:50px;
-cursor:pointer;z-index:20;">+
-<input type="file" accept="image/*" hidden onchange="loadImg(this)">
+<label style="
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:80px;
+  height:80px;
+  border:4px solid white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:50px;
+  cursor:pointer;
+  z-index:20;
+">+
+  <input type="file" accept="image/*" hidden onchange="loadImg(this)">
 </label>
 
 <script>
@@ -54,9 +87,10 @@ const bg = document.getElementById("bg");
 const oasis = document.getElementById("oasis");
 
 function clearBg(){
-  bg.innerHTML="";
+  bg.innerHTML = "";
+  bg.style.background = "";
   oasis.pause();
-  oasis.currentTime=0;
+  oasis.currentTime = 0;
 }
 
 function setBg(type){
@@ -81,7 +115,7 @@ function setBg(type){
       width:20px;height:80px;background:green;`;
       bg.appendChild(g);
       let d=1;
-      setInterval(()=>{ g.style.transform=`skewX(${d}deg)`; d*=-1; },800);
+      setInterval(()=>{ g.style.transform=\`skewX(\${d}deg)\`; d*=-1; },800);
     }
   }
 
@@ -113,6 +147,7 @@ function setBg(type){
 
   if(type==="minecraft"){
     bg.style.background="#7bed9f";
+
     const ground=document.createElement("div");
     ground.style=`position:absolute;bottom:0;width:100%;height:40%;
     background:#6ab04c`;
